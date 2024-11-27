@@ -30,7 +30,7 @@ with st.sidebar:
 
     st.image(img_bytes, caption=f"scan to open: {url}", use_container_width=True)
     obsidian_db = st.text_input('Obsidian Directory', value=default_vault_path)
-    model = st.selectbox('Model for Notes Generation', ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gpt-4o-mini', 'gpt-4o', 'ollama-minicpm-v', 'ollama-llama3.2-vision'])
+    model = st.selectbox('Model for Notes Generation', ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gpt-4o-mini', 'gpt-4o'])
     model_formatting = st.selectbox('Model for Notes Formatting', ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gpt-4o-mini', 'gpt-4o', 'ollama-qwen2', 'ollama-qwen2.5', 'ollama-llama3.2'])
 
     ocr_enhance = st.toggle('Use OCR Enhance', False)
@@ -48,6 +48,7 @@ if take_notes_button:
     if uploaded_files is not None:
         for file in uploaded_files:
             print()
+            name = "ocr.png"
             image_path = None
             pdf = None
             file_type = None
@@ -60,8 +61,8 @@ if take_notes_button:
             else:
                 logging.info(f"Processing image file.")
                 image = Image.open(file)
-                image.save(f'./ocr/{file.name}')
-                image_path = f"./ocr/{file.name}"
+                image.save(f'./ocr/{name}')
+                image_path = f"./ocr/{name}"
                 file_type = "image"
 
             with st.spinner('Taking notes...'):
@@ -69,7 +70,6 @@ if take_notes_button:
                 ocr_result = []
 
                 if ocr_enhance:
-                    name = "ocr.png"
                     if file_type == "pdf":
                         pages = pdfium.PdfDocument(file)
                         for i in range(len(pages)):
@@ -79,7 +79,6 @@ if take_notes_button:
                             ocr_result += ocr(f'./ocr/{name}')
                         os.remove(f'./ocr/{name}')
                     else:
-                        image.save(f'./ocr/{name}')
                         ocr_result = ocr(f'./ocr/{name}')
                         os.remove(f'./ocr/{name}')
                     logging.info(f"OCR results generated")

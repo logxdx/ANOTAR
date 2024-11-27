@@ -33,7 +33,7 @@ def get_image_data_url(image_file: str, image_format: str) -> str:
     except FileNotFoundError:
         print(f"Could not read '{image_file}'.")
         return None
-    return f"data:image/{image_format};base64,{image_data}"
+    return image_format, image_data
 
 
 def generated_notes_from_images(file=None, image_path=None, ocr_enhance_info: list[str] = None, model: str="llama3.2-vision"):
@@ -50,19 +50,25 @@ def generated_notes_from_images(file=None, image_path=None, ocr_enhance_info: li
     if model.startswith("ollama"):
         if file:
             prompt = file + "\n\n" + prompt
-        message ={
-                    "role": "user",
-                    "content": prompt,
-                }
+        message=[
+            {
+                "role": "system",
+                "content": SYSTEM_PROMPT,
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            }]
         if image_path:
-            image = Image.open(image_path)
-            buffer = BytesIO()
-            image.save(buffer, format="PNG")
-            buffer.seek(0)
-            message['images'] = [buffer]
+            message[1]['images'] = [f"{get_image_data_url(image_path, 'png')[1]}"]
 
-        response = ollama.chat(model = model[7:], messages=[message])
-        results = response['message']['content']
+        options = {
+            "temperature": 0.5,
+            "num_ctx": 8192,
+            "num_thread": 8,
+        }
+        response = ollama.chat(model = model[7:], messages=message, options=options)
+        results = response.message.content
 
     elif model.startswith("gemini"):
         message = []
@@ -72,41 +78,38 @@ def generated_notes_from_images(file=None, image_path=None, ocr_enhance_info: li
             message.append("\n\n")
         if file:
             message.append(file)
+            message.append(prompt)
             message.append("\n\n")
-        
+
         genai.configure(api_key=gemini_api_key)
-        model = genai.GenerativeModel(model_name=model, system_instruction=prompt)
+        model = genai.GenerativeModel(model_name=model, system_instruction=SYSTEM_PROMPT)
         response = model.generate_content(message)
         results = response.text
 
     elif model.startswith("gpt"):
+        if file:
+            prompt = file + "\n\n" + prompt
         messages=[
             {
                 "role": "system",
-                "content": prompt
+                "content": SYSTEM_PROMPT
             },
             {
                 "role": "user",
-                "content": [],
+                "content": prompt,
             }]
-        if file:
-            file = {
-                "type": "text",
-                "text": file
-            }
-            messages[1]["content"].append(file)
         if image_path:
-            image_data_url = get_image_data_url(image_path, "png")
+            image_format, image_data = get_image_data_url(image_path, "png")
             image = {
                     "type": "image_url",
                     "image_url": {
-                        "url": image_data_url,
+                        "url": f"data:image/{image_format};base64,{image_data}",
                         "detail": "auto"
                     }}
             messages[1]["content"].append(image)
-        
+
         client = OpenAI(base_url=openai_endpoint, api_key=github_api_key)
-        response = client.chat.completions.create(messages=messages, model=model, temperature=0.5, max_tokens=6000)
+        response = client.chat.completions.create(messages=messages, model=model, temperature=0.5, max_tokens=8192)
         results = response.choices[0].message.content
 
     notes = ""
@@ -117,49 +120,56 @@ def generated_notes_from_images(file=None, image_path=None, ocr_enhance_info: li
 def format_notes(notes: str, model: str="ollama-mistral"):
     prompt = f"""
     Review the provided text and ensure it is structured correctly in Markdown format, including any embedded LaTeX. Follow these guidelines:
-
     1. Markdown Structure:
     Verify that headings, lists, code blocks, and other Markdown elements follow the correct syntax and hierarchy.
     Ensure proper spacing and indentation, particularly in nested lists, tables, and code blocks.
     Confirm that all links, images, and other Markdown references are correctly formatted.
     Do not use '''markdown ''' code block for markdown.
-    
     2. LaTeX Equations:
     Check each LaTeX expression to ensure it is syntactically correct, fixing any errors in commands, symbols, or structures.
     If any LaTeX syntax is misplaced or missing (such as $ or $$ for inline or block math), adjust accordingly.
     Ensure that all inline LaTeX expressions are within $...$ and all block equations within $$...$$.
-    
     3. Corrective Changes:
     Make suitable corrections to any Markdown or LaTeX syntax that doesn't comply with standard formatting, Don't write the markdown in a code block.
-    
-    After completing these checks and corrections, output only the revised Markdown text without additional commentary.
-    Here's the provided text: {notes}"""
+    After completing these checks and corrections, output only the revised Markdown text without additional commentary."""
 
     print(f"Formatting Notes Structure using model: {model}")
 
     if model.startswith("ollama"):
-        message ={
-                    "role": "user",
-                    "content": prompt,
-                }
+        message=[
+            {
+                "role": "system",
+                "content": prompt,
+            },
+            {
+                "role": "user",
+                "content": notes,
+            }]
+
         response = ollama.chat(
             model = model[7:],
             messages=[message]
             )
-        results = response['message']['content']
+        results = response.message.content
 
     elif model.startswith("gemini"):
-        message = [prompt]
-        model = genai.GenerativeModel(model)
+        message = [notes]
+        genai.configure(api_key=gemini_api_key)
+        model = genai.GenerativeModel(model_name=model, system_instruction=prompt)
         response = model.generate_content(message)
         results = response.text
+
 
     elif model.startswith("gpt"):
         messages=[
             {
+                "role": "system",
+                "content": prompt,
+            },
+            {
                 "role": "user",
-                "content": prompt
-            }]        
+                "content": notes,
+            }]
         client = OpenAI(base_url=openai_endpoint, api_key=github_api_key)
         response = client.chat.completions.create(messages=messages, model=model, temperature=0.2, max_tokens=4096)
         results = response.choices[0].message.content
@@ -168,4 +178,3 @@ def format_notes(notes: str, model: str="ollama-mistral"):
     for line in results:
         notes += line
     yield notes
-
