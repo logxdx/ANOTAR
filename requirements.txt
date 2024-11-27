@@ -1,0 +1,11 @@
+streamlit
+ollama
+openai
+google-generativeai
+pillow
+easyocr
+pypdfium2
+qrcode
+requests
+python-dotenv
+google-api-python-client

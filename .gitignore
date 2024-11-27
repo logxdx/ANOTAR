@@ -1,0 +1,6 @@
+.env
+venv
+ocr
+keys.txt
+*.log
+creds.json
