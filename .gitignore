@@ -5,3 +5,4 @@ keys.txt
 *.log
 creds.json
 *.pyc
+*.key
