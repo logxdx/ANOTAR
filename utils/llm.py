@@ -7,7 +7,7 @@ from PIL import Image
 load_dotenv()
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
-github_api_key = os.getenv("GITHUB_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
 openai_endpoint = os.getenv("OPENAI_ENDPOINT")
 
 GENERATE_NOTES_SYSTEM_PROMPT = f"""You are a great note taker. Take concise and well-organized notes from the uploaded images or text. Focus on clarity and conciseness, without additional commentary. Capture key information directly, using the following structure:
@@ -39,7 +39,6 @@ MODEL_PROVIDER_MAPPING = {
     'llama3.2': 'ollama',
 }
 
-
 def get_image_data_url(image_file: str, image_format: str) -> str:
     try:
         with open(image_file, "rb") as f:
@@ -50,7 +49,7 @@ def get_image_data_url(image_file: str, image_format: str) -> str:
     return image_format, image_data
 
 
-def generate_notes_with_ollama(file=None, image_path=None, ocr_enhance_info: str = "", model: str="llama3.2-vision", SYSTEM_PROMPT: str = GENERATE_NOTES_SYSTEM_PROMPT):
+def generate_notes_with_ollama(file=None, image_path=None, ocr_info: str = "", model: str="llama3.2-vision", SYSTEM_PROMPT: str = GENERATE_NOTES_SYSTEM_PROMPT):
     message=[
         {
             "role": "system",
@@ -59,7 +58,7 @@ def generate_notes_with_ollama(file=None, image_path=None, ocr_enhance_info: str
     ]
 
     if file:
-        file = file + "\n" + ocr_enhance_info
+        file = file + "\n" + ocr_info
         message.append(
             {
                 "role": "user",
@@ -72,7 +71,7 @@ def generate_notes_with_ollama(file=None, image_path=None, ocr_enhance_info: str
         message.append(
             {
                 "role": "user",
-                "content" : ocr_enhance_info,
+                "content" : ocr_info,
                 "images": image,
             }
         )
@@ -86,26 +85,24 @@ def generate_notes_with_ollama(file=None, image_path=None, ocr_enhance_info: str
     response = ollama.chat(model = model[7:], messages=message, options=options)
     return response.message.content
 
-
-def generate_notes_with_gemini(file=None, image_path=None, ocr_enhance_info: str = None, model: str="gemini-1.5-flash-8b",  SYSTEM_PROMPT: str = GENERATE_NOTES_SYSTEM_PROMPT):
+def generate_notes_with_gemini(file=None, image_path=None, ocr_info: str = "", model: str="gemini-1.5-flash-8b",  SYSTEM_PROMPT: str = GENERATE_NOTES_SYSTEM_PROMPT):
     message = []
 
     if image_path:
         image = Image.open(image_path)
         message.append(image)
-        message.append("\n" + ocr_enhance_info)
+        message.append("\n" + ocr_info)
     
     if file:
-        file = file + "\n" + ocr_enhance_info
+        file = file + "\n" + ocr_info
         message.append(file)
 
     genai.configure(api_key=gemini_api_key)
     model = genai.GenerativeModel(model_name=model, system_instruction=SYSTEM_PROMPT)
     response = model.generate_content(message)
-    results = response.text
+    return response.text
 
-
-def generate_notes_with_gpt(file=None, image_path=None, ocr_enhance_info: str = None, model: str="gpt-4o", SYSTEM_PROMPT: str = GENERATE_NOTES_SYSTEM_PROMPT):
+def generate_notes_with_gpt(file=None, image_path=None, ocr_info: str = "", model: str="gpt-4o", SYSTEM_PROMPT: str = GENERATE_NOTES_SYSTEM_PROMPT):
     messages=[
         {
             "role": "system",
@@ -114,7 +111,7 @@ def generate_notes_with_gpt(file=None, image_path=None, ocr_enhance_info: str = 
     ]
     
     if file:
-        file = file + "\n" + ocr_enhance_info
+        file = file + "\n" + ocr_info
         messages.append(
             {
                 "role": "user",
@@ -135,13 +132,13 @@ def generate_notes_with_gpt(file=None, image_path=None, ocr_enhance_info: str = 
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": f"{ocr_enhance_info}"},
+                    {"type": "text", "text": f"{ocr_info}"},
                     image,
                 ]
             }
         )
 
-    client = OpenAI(base_url=openai_endpoint, api_key=github_api_key)
+    client = OpenAI(base_url=openai_endpoint, api_key=openai_api_key)
     response = client.chat.completions.create(messages=messages, model=model, temperature=0.5, max_tokens=8192)
     return response.choices[0].message.content
 
@@ -157,16 +154,16 @@ def generate_notes(file=None, image_path=None, ocr_enhance_info: str = "", model
     print(f"Generating Notes using model: {model, provider}")
 
     if provider == "google":
-        results = generate_notes_with_gemini(file=file, image_path=image_path, ocr_enhance_info=ocr_info, model=model, SYSTEM_PROMPT=GENERATE_NOTES_SYSTEM_PROMPT)
+        results = generate_notes_with_gemini(file=file, image_path=image_path, ocr_info=ocr_info, model=model, SYSTEM_PROMPT=GENERATE_NOTES_SYSTEM_PROMPT)
     elif provider == "github":
-        results = generate_notes_with_gpt(file=file, image_path=image_path, ocr_enhance_info=ocr_info, model=model, SYSTEM_PROMPT=GENERATE_NOTES_SYSTEM_PROMPT)
+        results = generate_notes_with_gpt(file=file, image_path=image_path, ocr_info=ocr_info, model=model, SYSTEM_PROMPT=GENERATE_NOTES_SYSTEM_PROMPT)
     elif provider == "ollama":
-        results = generate_notes_with_ollama(file=file, image_path=image_path, ocr_enhance_info=ocr_info, model=model, SYSTEM_PROMPT=GENERATE_NOTES_SYSTEM_PROMPT)
+        results = generate_notes_with_ollama(file=file, image_path=image_path, ocr_info=ocr_info, model=model, SYSTEM_PROMPT=GENERATE_NOTES_SYSTEM_PROMPT)
 
     notes = ""
     for line in results:
         notes += line
-    yield notes
+    return notes
 
 def format_notes(notes: str, model: str="ollama-mistral"):
 
@@ -183,5 +180,5 @@ def format_notes(notes: str, model: str="ollama-mistral"):
     notes = ""
     for line in results:
         notes += line
-    yield notes
+    return notes
 

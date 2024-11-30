@@ -1,0 +1,21 @@
+[global]
+disableWidgetStateDuplicationWarning = true
+
+[client]
+showErrorDetails = false
+
+[theme]
+base = "dark"
+primaryColor = "#907ad6"
+backgroundColor = "#2c2b3c"
+secondaryBackgroundColor = "#121420"
+textColor = "#e0e1dd"
+font = "monospace"
+
+[logger]
+level = "info"
+messageFormat = "%(asctime)s %(levelname) -7s %(name)s: %(message)s"
+
+[server]
+runOnSave = true
+headless = false

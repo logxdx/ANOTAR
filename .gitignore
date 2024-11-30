@@ -6,3 +6,4 @@ keys.txt
 creds.json
 *.pyc
 *.key
+__pycache__
