@@ -2,13 +2,14 @@ import ollama, base64, os
 import google.generativeai as genai
 from openai import OpenAI
 from dotenv import load_dotenv
+from utils.cypher.key import get_api_key
 from PIL import Image
 
 load_dotenv()
 
-gemini_api_key = os.getenv("GEMINI_API_KEY")
-openai_api_key = os.getenv("OPENAI_API_KEY")
-openai_endpoint = os.getenv("OPENAI_ENDPOINT")
+gemini_api_key = get_api_key("GEMINI_API_KEY")
+openai_api_key = get_api_key("OPENAI_API_KEY")
+openai_endpoint = get_api_key("OPENAI_ENDPOINT")
 
 GENERATE_NOTES_SYSTEM_PROMPT = f"""You are a great note taker. Take concise and well-organized notes from the uploaded images or text. Focus on clarity and conciseness, without additional commentary. Capture key information directly, using the following structure:
     Title: Use a relevant and descriptive title.

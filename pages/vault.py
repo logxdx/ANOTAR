@@ -1,8 +1,9 @@
 import streamlit as st
 import os
 from utils.directory_manager import list_directory_tree
+from utils.cypher.key import get_api_key
 
-obsidian_db = os.getenv("OBSIDIAN_VAULT_PATH", os.getcwd())
+obsidian_db = get_api_key("OBSIDIAN_VAULT_PATH")
 vault_name = obsidian_db.split("\\")[-2]
 st.title(f"Obsidian: {vault_name}")
 

@@ -1,9 +1,10 @@
 from dotenv import load_dotenv
+from utils.cypher.key import get_api_key
 import os
 
 load_dotenv()
 
-VAULT = os.getenv("OBSIDIAN_VAULT_PATH")
+VAULT = get_api_key("OBSIDIAN_VAULT_PATH")
 
 
 def get_folder_structure(base_path):

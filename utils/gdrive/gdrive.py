@@ -2,6 +2,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from dotenv import load_dotenv
+from utils.cypher.key import get_api_key
 import os
 import io
 import json
@@ -10,7 +11,7 @@ load_dotenv()
 
 SCOPES = ['https://www.googleapis.com/auth/drive']
 SERVICE_ACCOUNT_FILE = 'creds.json'
-PARENT_FOLDER_ID = os.getenv("GDRIVE_FOLDER_ID")
+PARENT_FOLDER_ID = get_api_key("GDRIVE_FOLDER_ID")
 
 
 def authenticate():

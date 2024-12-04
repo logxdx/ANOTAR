@@ -7,6 +7,7 @@ from io import BytesIO
 from utils.obsidian import create_obsidian_note
 from utils.preprocess import preprocess_file
 from utils.directory_manager import get_folder_structure
+from utils.cypher.key import get_api_key
 from utils.llm import GENERATION_MODELS, FORMATTING_MODELS, generate_notes, format_notes
 
 load_dotenv()
@@ -14,7 +15,7 @@ load_dotenv()
 log_file_path = "runtime_log.log"
 logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-VAULT = os.getenv("OBSIDIAN_VAULT_PATH")
+VAULT = get_api_key("OBSIDIAN_VAULT_PATH")
 
 st.set_page_config(
     page_title="AI Notes",
