@@ -2,12 +2,12 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from dotenv import load_dotenv
-from utils.cypher.key import get_api_key
+from utils.cypher.key import get_api_key, ENV_FILE
 import os
 import io
 import json
 
-load_dotenv()
+load_dotenv(ENV_FILE, override=True)
 
 SCOPES = ['https://www.googleapis.com/auth/drive']
 SERVICE_ACCOUNT_FILE = 'creds.json'
