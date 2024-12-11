@@ -2,10 +2,10 @@
 disableWidgetStateDuplicationWarning = true
 
 [theme]
-primaryColor="#7ad68a"
-backgroundColor="#315c53"
-secondaryBackgroundColor="#073521"
-textColor="#e0e1dd"
+primaryColor="#309842"
+backgroundColor="#0a291b"
+secondaryBackgroundColor="#073f32"
+textColor="#b2dab2"
 font="serif"
 
 [logger]
