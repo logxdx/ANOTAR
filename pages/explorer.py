@@ -324,7 +324,7 @@ class StreamlitFileManager:
                     st.error("No items found !!")
             else:
                 for item in paginated_items:
-                    col1, col2, col3 = st.columns([3, 1, 1])
+                    _, col1, _, col_super = st.columns([0.5, 2, 1, 1])
                     is_active = (st.session_state[self._get_state_key('previous_path')] == item['path'])
                     
                     with col1:
@@ -332,7 +332,7 @@ class StreamlitFileManager:
                             if st.button(
                                 f"📁 {item['name']}", 
                                 key=f"{self.key_prefix}dir_{item['path']}",
-                                # use_container_width=True,
+                                use_container_width=True,
                             ):
                                 st.session_state[self._get_state_key('previous_path')] = \
                                     st.session_state[self._get_state_key('current_path')]
@@ -344,8 +344,7 @@ class StreamlitFileManager:
                             if st.button(
                                 f"📄 {item['name'][:-3]}", 
                                 key=f"{self.key_prefix}file_{item['path']}",
-                                type='primary',
-                                # use_container_width=True,
+                                use_container_width=True,
                             ):
                                 st.session_state[self._get_state_key('previous_path')] = st.session_state[self._get_state_key('current_path')]
                                 st.session_state[self._get_state_key('current_path')] = item['path']
@@ -359,16 +358,19 @@ class StreamlitFileManager:
                                     st.session_state[self._get_state_key('page_content')] = content
 
                                 st.rerun()
-                    with col2:
-                        if not item['is_directory']:
-                            st.text(self._format_size(item['size']))
-                    
-                    with col3:
-                        delete_button = st.button('🗑️', key=f"{self.key_prefix}del_{item['path']}", help="Delete item")
-                        if f"delete_button_{item['path']}" not in st.session_state:
-                            st.session_state[f"delete_button_{item['path']}"] = False
-                        if delete_button:
-                            st.session_state[f"delete_button_{item['path']}"] = delete_button
+
+                    with col_super:
+                        col2, col3 = st.columns([1, 1])
+                        with col2:
+                            if not item['is_directory']:
+                                st.text(self._format_size(item['size']))
+                        
+                        with col3:
+                            delete_button = st.button('🗑️', key=f"{self.key_prefix}del_{item['path']}", help="Delete item")
+                            if f"delete_button_{item['path']}" not in st.session_state:
+                                st.session_state[f"delete_button_{item['path']}"] = False
+                            if delete_button:
+                                st.session_state[f"delete_button_{item['path']}"] = delete_button
 
                     if st.session_state[f"delete_button_{item['path']}"]:
                         st.warning(f"Are you sure you want to delete {item['name']}?")
