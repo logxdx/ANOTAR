@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
-from utils.cypher.key import get_api_key
+from utils.cypher.key import get_api_key, ENV_FILE
 import os
 
-load_dotenv()
+load_dotenv(ENV_FILE, override=True)
 
 VAULT = get_api_key("OBSIDIAN_VAULT_PATH")
 
@@ -17,11 +17,14 @@ def get_folder_structure(base_path):
     Returns:
         list: List of relative paths to folders
     """
+
+    if not base_path:
+        return
+
     folder_paths = []
     
     # Ensure the base path exists
     if not os.path.exists(base_path):
-        st.error(f"Specified path does not exist: {base_path}")
         return folder_paths
     
     # Walk through the directory

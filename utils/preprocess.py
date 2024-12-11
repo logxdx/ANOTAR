@@ -1,5 +1,6 @@
-import easyocr
+import easyocr, re
 import pypdfium2 as pdfium
+from PIL import Image
 
 def ocr(image_path: str):
     try:
@@ -25,7 +26,7 @@ def preprocess_pdf(pdf, ocr_enhance=False):
 
         if ocr_enhance:
             for i in range(len(pages)):
-                name = f".\ocr\page{i}.png"
+                name = f"./ocr/page{i}.png"
                 page = pages[i]
                 image = page.render(scale=4).to_pil()
                 image.save(f'{name}')
@@ -40,8 +41,8 @@ def preprocess_pdf(pdf, ocr_enhance=False):
 def preprocess_image(image):
     ocr_result = ""
     try:
-        name = ".\ocr\ocr.png"
-        image = Image.open(file)
+        name = "./ocr/ocr.png"
+        image = Image.open(image)
         image.save(f'{name}')
         image_path = f"{name}"
         ocr_result += ocr(image_path)
@@ -52,6 +53,7 @@ def preprocess_image(image):
         print("Error during image OCR:", e)
 
 def preprocess_file(file, ocr_enhance=False):
+    print("Processing file...")
     if file.name.lower().endswith('.pdf'):
         return preprocess_pdf(file, ocr_enhance)
     else:
