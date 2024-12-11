@@ -1,16 +1,12 @@
 [global]
 disableWidgetStateDuplicationWarning = true
 
-[client]
-showErrorDetails = false
-
 [theme]
-base = "dark"
-primaryColor = "#907ad6"
-backgroundColor = "#2c2b3c"
-secondaryBackgroundColor = "#121420"
-textColor = "#e0e1dd"
-font = "monospace"
+primaryColor="#7ad68a"
+backgroundColor="#315c53"
+secondaryBackgroundColor="#073521"
+textColor="#e0e1dd"
+font="serif"
 
 [logger]
 level = "info"

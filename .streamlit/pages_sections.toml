@@ -1,0 +1,18 @@
+[[pages]]
+path = "pages/notes.py"
+name = "Take Notes"
+icon = "📝"
+url_path = "notes"
+
+[[pages]]
+path = "pages/explorer.py"
+name = "Explorer"
+icon = "📂"
+url_path = "explorer"
+
+[[pages]]
+path = "pages/settings.py"
+name = "Settings"
+icon = "⚙️"
+url_path = "settings"
+

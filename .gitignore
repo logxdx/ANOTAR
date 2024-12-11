@@ -7,3 +7,4 @@ creds.json
 *.pyc
 *.key
 __pycache__
+.vscode
