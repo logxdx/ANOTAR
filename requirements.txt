@@ -1,4 +1,5 @@
 streamlit==1.40.2
+st-pages==1.0.1
 cryptography==44.0.0
 ollama==0.4.2
 openai==1.55.3
@@ -7,6 +8,5 @@ google-generativeai==0.8.3
 pillow==11.0.0
 easyocr==1.7.2
 pypdfium2==4.30.0
-qrcode==8.0
 python-dotenv==1.0.1
 google-api-python-client==2.154.0
