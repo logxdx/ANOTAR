@@ -254,8 +254,8 @@ class StreamlitFileManager:
                         with st.container(border=False):
                             folder_name = st.text_input(
                                 "Enter folder name:",
-                                key=f"{self.key_prefix}new_folder_name"
-
+                                key=f"{self.key_prefix}new_folder_name",
+                                help="Create a new folder inside the current directory."
                             )
                             col1, col2 = st.columns([1, 1])
                             with col1:
