@@ -65,7 +65,7 @@ To install and use ANOTAR, follow the steps below:
 3. Configure settings:
    - Add API keys for desired providers via the settings page.
    - Set the path to your Obsidian vault directory.
-     > **Note**: Obsidian is preferred due to its native markdown support, but it is not required. The default path is: `<user_name>/Documents/ANOTAR`.
+> **Note**: Obsidian is preferred due to its native markdown support, but it is not required. The default path is: `<user_name>/Documents/ANOTAR`.
 
 4. Begin processing files:
    - Upload an image or PDF.
