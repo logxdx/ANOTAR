@@ -1,22 +1,18 @@
-import os
+import os, json
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv, set_key, unset_key
 
 KEY_FILE = "secret.key"
-ENV_FILE = ".env"
+
+config = json.load(open("config.json"))
+PROVIDER_KEYS = config["PROVIDER_KEYS"]
+ENV_FILE = config["ENV_FILE"]
 
 # Load environment variables
 load_dotenv(ENV_FILE, override=True)
 
-# API keys and their corresponding provider names
-ALL_KEYS = {
-    "Google Gemini":["GEMINI_API_KEY"],
-    "OpenAI": ["OPENAI_API_KEY", "OPENAI_ENDPOINT"],
-}
-
 # Function to encrypt a key
 def encrypt_key(key: str) -> str:
-    print("Key:", key)
     encryption_key = load_or_generate_key()
     key = key.encode('utf-8')
     encrypted_api_key = encryption_key.encrypt(key)
