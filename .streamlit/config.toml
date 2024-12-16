@@ -1,17 +1,42 @@
 [global]
+
 disableWidgetStateDuplicationWarning = true
 
+
 [theme]
-primaryColor="#309842"
-backgroundColor="#0a291b"
-secondaryBackgroundColor="#073f32"
-textColor="#b2dab2"
-font="serif"
+
+primaryColor = "#309842"
+
+backgroundColor = "#0a291b"
+
+secondaryBackgroundColor = "#073f32"
+
+textColor = "#b2dab2"
+
+font = "serif"
+
 
 [logger]
+
 level = "info"
+
 messageFormat = "%(asctime)s %(levelname) -7s %(name)s: %(message)s"
 
+
 [server]
+
 runOnSave = true
+
 headless = false
+
+maxUploadSize = 50
+
+
+[browser]
+
+gatherUsageStats = false
+
+
+[client]
+
+showErrorDetails = "none"
