@@ -1,0 +1,46 @@
+{
+    "ENV_FILE": ".env",
+
+    "PROVIDER_KEYS": {
+        "Google Gemini": ["GEMINI_API_KEY"],
+        "OpenAI": ["OPENAI_API_KEY", "OPENAI_ENDPOINT"],
+        "Mistral AI": ["MISTRALAI_API_KEY"],
+        "Groq": ["GROQ_API_KEY"],
+        "Ollama": ["OLLAMA_API_KEY"]
+    },
+    
+    "MODEL_PROVIDER_MAPPING": {
+        "Google Gemini": {
+            "gemini-1.5-flash": "multimodal",
+            "gemini-1.5-flash-8b": "multimodal",
+            "gemini-1.5-pro": "multimodal"
+        },
+        "OpenAI": {
+            "gpt-4o-mini": "multimodal",
+            "gpt-4o": "multimodal"
+        },
+        "Mistral AI": {
+            "mistral-large-latest": "text",
+            "ministral-8b-latest": "text",
+            "ministral-3b-latest": "text",
+            "mistral-small-latest": "text",
+            "open-mistral-nemo": "text",
+            "pixtral-large-latest": "multimodal",
+            "pixtral-12b-2409": "multimodal"
+        },
+        "Groq": {
+            "mixtral-8x7b-32768": "text",
+            "llama-3.3-70b-versatile": "text",
+            "llama-3.1-8b-instant": "text",
+            "llama3-70b-8192": "text",
+            "llama3-8b-8192": "text"
+        },
+        "Ollama": {
+            "llama3.2-vision": "multimodal",
+            "llama3.2": "text",
+            "llama3.1": "text",
+            "qwen2": "text",
+            "phi3": "text"
+        }
+    }
+}
