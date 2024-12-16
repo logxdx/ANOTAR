@@ -56,9 +56,10 @@ def create_obsidian_note(note_title: str, note_content: str, vault_path: str, up
             logger.info("Image saved to: %s", target_image_path)
         
         file_markdown = f"[[{filename}]]\n"
-        # note_content = note_content.replace('\\[\n', '$').replace('\n\\]', '$').replace('\\[ ', '$').replace(' \\]', '$').replace('\\[', '$').replace('\\]', '$')
-        # note_content = note_content.replace('\\(\n', '$').replace('\n\\)', '$').replace('\\( ', '$').replace(' \\)', '$').replace('\\(', '$').replace('\\)', '$')
-        # note_content = note_content.replace("\n```markdown", "\n").replace("\n```", "\n")
+        note_content = note_content.replace("\\[ \n", "$").replace(" \n\\]", "$").replace('\\[\n', '$').replace('\n\\]', '$').replace('\\[ ', '$').replace(' \\]', '$').replace('\\[', '$').replace('\\]', '$')
+        note_content = note_content.replace("\\( \n", "$").replace(" \n\\)", "$").replace('\\(\n', '$').replace('\n\\)', '$').replace('\\( ', '$').replace(' \\)', '$').replace('\\(', '$').replace('\\)', '$')
+        if note_content.startswith("```markdown\n") and note_content.endswith("\n```"):
+            note_content = note_content.replace("```markdown\n", "").replace("\n```", "")
         
         with open(note_path, 'a', encoding='utf-8') as note_file:
             note_file.write('\n---\n' + '\n' + file_markdown + '\n' + note_content + '\n' + '\n---\n')
