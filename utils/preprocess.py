@@ -19,6 +19,7 @@ def preprocess_pdf(pdf, ocr_enhance=False):
         if t:
             text += t
 
+    text = text.strip()
     alpha_chars = len(re.findall(r'[a-zA-Z]', text))
     if len(text) == 0 or alpha_chars / len(text) < 0.3:
         ocr_enhance = True
@@ -29,10 +30,10 @@ def preprocess_pdf(pdf, ocr_enhance=False):
             page = pages[i]
             image = page.render(scale=4).to_pil()
             image.save(f'{name}')
-            ocr_result += ocr(f'{name}') + '\n'
+            ocr_result += str(ocr(f'{name}')) + '\n'
             os.remove(f'{name}')
 
-        return text, None, ocr_result
+    return text, None, ocr_result
 
 def preprocess_image(image):
     ocr_result = ""
@@ -40,13 +41,14 @@ def preprocess_image(image):
     image = Image.open(image)
     image.save(f'{name}')
     image_path = f"{name}"
-    ocr_result += ocr(image_path)
+    ocr_result += str(ocr(image_path))
 
     return None, image_path, ocr_result
 
 def preprocess_file(file, ocr_enhance=False):
     print("Processing file...")
     if file.name.lower().endswith('.pdf'):
+        print("pdf file detected.")
         results = preprocess_pdf(file, ocr_enhance)
     else:
         results = preprocess_image(file)
@@ -55,6 +57,6 @@ def preprocess_file(file, ocr_enhance=False):
         print("Preprocessing completed.")
         return results
     else:
-        print("Preprocessing failed.")
+        print("Error during preprocessing.")
         return None, None, None
         

@@ -8,3 +8,4 @@ creds.json
 *.key
 __pycache__
 .vscode
+.streamlit

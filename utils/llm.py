@@ -1,4 +1,5 @@
 import json, base64, os
+from typing import List, Tuple, Union
 import ollama
 import google.generativeai as genai
 from openai import OpenAI
@@ -44,7 +45,7 @@ def get_providers():
             providers.append(provider)
     return providers
 
-def get_models(providers: [str]):
+def get_models(providers: List[str]):
     generation_models, formatting_models = [], []
 
     for provider in providers:
@@ -78,7 +79,7 @@ def get_provider_api_key(provider_name, key_name):
         raise MissingAPIKeyError(provider_name)
     return api_key
 
-def get_image_data_url(image_file: str, image_format: str) -> str:
+def get_image_data_url(image_file: str, image_format: str) -> Tuple[Union[str, None], Union[str, None]]:
     try:
         with open(image_file, "rb") as f:
             image_data = base64.b64encode(f.read()).decode("utf-8")
@@ -86,7 +87,7 @@ def get_image_data_url(image_file: str, image_format: str) -> str:
         raise FileNotFoundError
     except Exception as e:
         print(f"{e}. \nCould not read '{image_file}'.")
-        return None
+        return None, None
     return image_format, image_data
 
 
@@ -141,8 +142,8 @@ def generate_notes_with_gemini(file=None, image_path=None, ocr_info: str = "", m
         message.append(file)
 
     genai.configure(api_key=gemini_api_key)
-    model = genai.GenerativeModel(model_name=model, system_instruction=SYSTEM_PROMPT)
-    response = model.generate_content(message, generation_config = {"temperature": 0.4, "max_output_tokens": 8192})
+    agent = genai.GenerativeModel(model_name=model, system_instruction=SYSTEM_PROMPT)
+    response = agent.generate_content(message, generation_config = {"temperature": 0.4, "max_output_tokens": 8192})
     return response.text
 
 def generate_notes_with_gpt(file=None, image_path=None, ocr_info: str = "", model: str="gpt-4o", SYSTEM_PROMPT: str = GENERATE_NOTES_SYSTEM_PROMPT):
